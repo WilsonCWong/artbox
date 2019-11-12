@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import {
   Button,
   Container,
@@ -11,6 +11,7 @@ import {
 import {Alert} from "react-bootstrap";
 import {valuesIn} from "lodash-es";
 import { authenticateUser } from "../../actions/auth";
+import { updateUser } from "../../actions/user";
 
 const LogoContainer = styled.div`
   display: flex;
@@ -81,7 +82,7 @@ const Input = styled.input`
 function Login() {
   const [canRender, setCanRender] = useState(false);
   const [errors, setErrors] = useState([]);
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
 
@@ -99,17 +100,18 @@ function Login() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    axios.post('/login', { email, password, remember }, {
+    axios.post('/login', { login, password, remember }, {
       headers: { "Content-Type": "application/json" }
     })
       .then(res => {
-        console.log(res);
-
+        dispatch(updateUser(res.data.user));
         dispatch(authenticateUser(true));
         history.push('/');
       })
       .catch(err => {
-        setErrors(valuesIn(err.response.data.errors));
+        (err.response.status === 500) ?
+          setErrors(valuesIn({server: 'A server error has occurred.'}))
+          : setErrors(valuesIn(err.response.data.errors));
       });
   };
 
@@ -138,8 +140,8 @@ function Login() {
       <StyledForm onSubmit={handleSubmit}>
         <Wrapper>
           <Control>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" name="email" value={email} onChange={e => setEmail(e.target.value)} required />
+              <Label htmlFor="login">Email / Username</Label>
+              <Input id="login" type="text" name="login" value={login} onChange={e => setLogin(e.target.value)} required />
           </Control>
           <Control>
               <Label htmlFor="password">Password</Label>
@@ -153,7 +155,7 @@ function Login() {
             <Button fullWidth type='submit' variant="contained" color="primary">Log In</Button>
           </Control>
           <p>
-            Don't have an account? <a href='/register'>Register here.</a>
+            Don't have an account? <Link to='/register'>Register here.</Link>
           </p>
           { (errors.length) ? renderErrors(errors) : null }
         </Wrapper>

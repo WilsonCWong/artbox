@@ -70,7 +70,7 @@ const Input = styled.input`
 function Login() {
   const [canRender, setCanRender] = useState(false);
   const [errors, setErrors] = useState([]);
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -88,16 +88,16 @@ function Login() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    axios.post('/register', { name, email, password, 'password_confirmation': confirmPassword }, {
+    axios.post('/register', { username, email, password, 'password_confirmation': confirmPassword }, {
       headers: { "Content-Type": "application/json" }
     })
       .then(res => {
-        console.log(res);
-
         history.push('/login');
       })
       .catch(err => {
-        setErrors(valuesIn(err.response.data.errors));
+        (err.response.status === 500) ?
+          setErrors(valuesIn({server: 'A server error has occurred.'}))
+          : setErrors(valuesIn(err.response.data.errors));
       });
   };
 
@@ -125,8 +125,8 @@ function Login() {
       <StyledForm onSubmit={handleSubmit}>
         <Wrapper>
           <Control>
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" type="name" name="name" value={name} onChange={e => setName(e.target.value)} required />
+            <Label htmlFor="username">Username</Label>
+            <Input id="username" type="text" name="username" value={username} onChange={e => setUsername(e.target.value)} required />
           </Control>
           <Control>
               <Label htmlFor="email">Email</Label>
