@@ -14,17 +14,18 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['prefix' => 'web_api'], function() {
-    Route::get('checkAuth', function(Request $request) {
-        if (auth()->check()) {
-            return response('', 200);
-        }
-        else {
-            return response('', 401);
-        }
-    });
-});
+    Route::get('checkAuth', 'AuthCheckController');
 
-//Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('feed/home/{quantity}', 'FeedController@home');
+
+    Route::get('profile/{username}', 'ProfileController@show');
+    Route::patch('profile', 'ProfileController@updateProfile')->name('profile.update');
+
+    Route::get('posts/{post}', 'PostController@show');
+    Route::post('posts/create', 'PostController@store');
+    Route::patch('posts/{post}', 'PostController@update');
+    Route::delete('posts/{post}', 'PostController@destroy');
+});
 
 // Authentication Routes
 Route::post('login', 'Auth\LoginController@login');
