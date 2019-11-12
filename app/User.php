@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'username', 'description', 'profile_picture', 'email', 'password',
     ];
 
     /**
@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'updated_at', 'created_at', 'email_verified_at'
     ];
 
     /**
@@ -36,4 +36,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function posts() {
+        return $this->hasMany(Post::class, 'poster_id');
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class, 'commenter_id');
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->profile_picture;
+    }
+
+    public function createPost($post) {
+        return $this->posts()->create($post);
+    }
 }
