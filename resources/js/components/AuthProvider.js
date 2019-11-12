@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { useDispatch } from "react-redux";
-import { useHistory } from 'react-router-dom';
-import { authenticateUser } from "../actions/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useLocation } from 'react-router-dom';
+import { authenticateUser, authenticating } from "../actions/auth";
+import { updateUser } from "../actions/user";
 
+/**
+ * Performs the initial auth check and retrieval of the user and updates the Redux store.
+ */
 function AuthProvider({children}) {
-  const [isDoneAuth, setIsDoneAuth] = useState(false);
+  const isAuthenticating = useSelector(state => state.auth.isAuthenticating);
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     axios.get('/web_api/checkAuth')
       .then(res => {
-        setIsDoneAuth(true);
+        dispatch(updateUser(res.data.user));
+        dispatch(authenticating(false));
         dispatch(authenticateUser(true));
-        history.push('/');
+        history.push(location.pathname);
       })
       .catch(err => {
-        setIsDoneAuth(true);
-        history.push('/login');
+        dispatch(authenticating(false));
       });
   }, []);
 
-  if (!isDoneAuth) return null;
+  if (isAuthenticating) return null;
 
   return (
     <>

@@ -2,9 +2,15 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Route, Redirect } from 'react-router-dom';
 
+/**
+ * Route that only allows unauthenticated users (guests) to view.
+ */
 export function GuestRoute({ children, ...rest }) {
   const authenticated = useSelector(state => state.auth.authenticated);
-  console.log({location});
+  const authenticating = useSelector(state => state.auth.isAuthenticating);
+
+  if (authenticating) return null;
+
   return (
     <Route
       {...rest}
@@ -14,7 +20,7 @@ export function GuestRoute({ children, ...rest }) {
         ) : (
           <Redirect
             to={{
-              pathname: location.origin,
+              pathname: "/",
               state: { from: location }
             }}
           />
