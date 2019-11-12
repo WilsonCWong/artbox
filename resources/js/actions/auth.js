@@ -4,3 +4,10 @@ export const authenticateUser = (auth) => {
     auth
   }
 }
+
+export const authenticating = (isAuthenticating) => {
+  return {
+    type: 'AUTHENTICATING',
+    isAuthenticating
+  }
+}
