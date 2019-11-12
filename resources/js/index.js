@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { initStore } from './store';
+import { GlobalStyle } from "./components/GlobalStyle";
 import AuthProvider from './components/AuthProvider';
 import { PrivateRoute } from "./components/PrivateRoute";
 import { GuestRoute } from "./components/GuestRoute";
@@ -16,9 +17,13 @@ import TopNavigation from './components/TopNavigation';
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Home from "./pages/home";
+import Settings from "./pages/settings";
 
+import CreatePost from "./pages/posts/create";
+import ViewPost from "./pages/posts/view";
+import EditPost from "./pages/posts/edit";
 
-
+import Profile from "./pages/profile";
 
 const store = initStore();
 
@@ -27,11 +32,17 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
+        <GlobalStyle />
         <AuthProvider>
           <TopNavigation />
 
           <Switch>
             <PrivateRoute exact path='/'><Home /></PrivateRoute>
+            <PrivateRoute exact path="/settings"><Settings /></PrivateRoute>
+            <PrivateRoute path="/profile/:username"><Profile /></PrivateRoute>
+            <PrivateRoute exact path="/posts/create"><CreatePost /></PrivateRoute>
+            <PrivateRoute exact path="/posts/:hexID"><ViewPost /></PrivateRoute>
+            <PrivateRoute path="/posts/:hexID/edit"><EditPost /></PrivateRoute>
             <GuestRoute path='/login'><Login /></GuestRoute>
             <GuestRoute path='/register'><Register /></GuestRoute>
           </Switch>
