@@ -7,5 +7,9 @@
         <language minSize="47" name="JavaScript" />
       </Languages>
     </inspection_tool>
+    <inspection_tool class="PhpUndefinedClassInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="DONT_REPORT_MULTI_RESOLVE" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PhpUndefinedMethodInspection" enabled="false" level="WARNING" enabled_by_default="false" />
   </profile>
 </component>
