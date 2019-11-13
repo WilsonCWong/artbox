@@ -106,7 +106,7 @@ function CreatePost() {
     formData.append('post_image', previewBlob.current);
 
 
-    axios.post('/web_api/posts/create', formData, {
+    axios.post('/web_api/posts', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
