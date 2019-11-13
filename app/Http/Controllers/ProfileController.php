@@ -20,7 +20,7 @@ class ProfileController extends Controller
             ->only(['show']);
     }
 
-
+    // Shows all the profile information about the user (user info + posts)
     public function show($username) {
         if (auth()->check()) {
             $user = User::where('username', $username)->firstOrFail();
