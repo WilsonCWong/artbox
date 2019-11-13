@@ -15,20 +15,27 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'web_api'], function() {
     Route::get('checkAuth', 'AuthCheckController');
+    // For testing purposes
+    Route::get('csrf', 'TestController@csrf');
 
     Route::get('feed/home/{quantity}', 'FeedController@home');
+    Route::get('feed/users/{quantity}', 'FeedController@users');
 
     Route::get('profile/{username}', 'ProfileController@show');
     Route::patch('profile', 'ProfileController@updateProfile')->name('profile.update');
 
+    Route::post('/posts/{post}/comments', 'CommentController@store');
+    Route::patch('/comments/{comment}', 'CommentController@update');
+    Route::delete('/comments/{comment}', 'CommentController@destroy');
+
     Route::get('posts/{post}', 'PostController@show');
-    Route::post('posts/create', 'PostController@store');
+    Route::post('posts', 'PostController@store');
     Route::patch('posts/{post}', 'PostController@update');
     Route::delete('posts/{post}', 'PostController@destroy');
 });
 
 // Authentication Routes
-Route::post('login', 'Auth\LoginController@login');
+Route::post('login', 'Auth\LoginController@login')->name('login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Registration Routes
