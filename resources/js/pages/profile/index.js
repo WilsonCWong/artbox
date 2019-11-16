@@ -18,7 +18,7 @@ const masonryStyle = css`
 
 const Container = styled.div`
   width: 100%;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 64px);
   background-color: #fbfbfb;
 `;
 
@@ -51,15 +51,93 @@ const UserInfo = styled.div`
 
 const UsernameDisplay = styled.h1`
   font-size: 2em;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: "Nunito", "Roboto", "Helvetica", "Arial", sans-serif;
   text-shadow: 1px 1px 2px rgba(0,0,0,.37);
   color: #2d2d2d;
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  color: #FFF;
+  background-color: rgba(0, 0, 0, 0.35);
+  transition: opacity 0.2s ease-in-out;
+`;
+
+const GridItem = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  
+  &:hover ${ImageOverlay} {
+    pointer-events: initial;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.35);
+  }
 `;
 
 const GridImage = styled.img`
   display: block;
   width: 100%;
+`;
+
+const PostTitle = styled.h2`
+  font-size: 1.5em;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 10px;
+  font-family: 'Nunito', sans-serif;
+  color: #FFF;
+  max-width: 100%;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  &:hover {
+    text-decoration: none;
+    color: #bfbfbf;
+  }
 `
+
+const PosterInfo = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 15px;
+`;
+
+const PosterAvatar = styled(Avatar)`
+  && {
+    width: 30px;
+    height: 30px;
+  }
+`;
+
+const PosterName = styled.a`
+  font-size: 1em;
+  font-family: 'Nunito', sans-serif;
+  margin-left: 10px;
+  margin-bottom: 0;
+  text-decoration: none;
+  color: #FFF;
+  transition: color 0.2s ease-in-out;
+  
+  &:hover {
+    text-decoration: none;
+    color: #bfbfbf;
+  }
+`;
 
 function Profile() {
   let { username } = useParams();
@@ -77,7 +155,7 @@ function Profile() {
       .catch(err => {
         console.log(err);
       });
-  }, [])
+  }, [username])
 
   const imagesLoaded = loadedInstance => {
     console.log(loadedInstance);
@@ -92,9 +170,31 @@ function Profile() {
   const gridItems = user.posts.map(post => {
       return (
         <div key={post.id} className="grid-item">
-          <Link to={`/posts/${post.id.toString(16)}`}>
-          <GridImage src={`/storage${post.media[0].content_url}`} />
-          </Link>
+          <GridItem>
+            <Link to={`/posts/${post.id.toString(16)}`}>
+              <GridImage src={`/storage${post.media[0].content_url}`} />
+            </Link>
+            <ImageOverlay>
+              <div css='display: flex; flex-direction: column; justify-content: flex-start; min-width: 0;'>
+                <PostTitle as={Link} to={`/posts/${post.id.toString(16)}`}>
+                  {post.title}
+                </PostTitle>
+                <PosterInfo>
+                  <PosterAvatar as={Link} to={`/profile/${post.poster.username}`}>
+                    <PosterAvatar
+                      src={
+                        (post.poster.profile_picture) ? `/storage/${post.poster.profile_picture}`
+                          : '/images/user_placeholder.png'
+                      }
+                    />
+                  </PosterAvatar>
+                  <PosterName as={Link} to={`/profile/${post.poster.username}`}>
+                    {post.poster.username}
+                  </PosterName>
+                </PosterInfo>
+              </div>
+            </ImageOverlay>
+          </GridItem>
         </div>
       );
     });
