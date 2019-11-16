@@ -25,8 +25,6 @@ class FeedController extends Controller
                     ->limit($quantity)
                     ->get();
 
-        phpinfo();
-
         return response()->json(['posts' => $posts]);
     }
 
