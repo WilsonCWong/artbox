@@ -142,7 +142,7 @@ function EditPost() {
       setPreview(null);
       previewBlob.current = null;
       setDescription('');
-      history.push(`/posts/${parseInt(hexID, 16)}`);
+      history.push(`/posts/${hexID}`);
     })
       .catch(err => {
         (err.response.status === 500) ?
@@ -208,7 +208,7 @@ function EditPost() {
                 label='Description'
                 multiline
                 variant='outlined'
-                rowsMax='8'
+                inputProps={{maxLength: 200}}
                 margin='normal'
                 value={description}
                 onChange={e => setDescription(e.target.value)}
