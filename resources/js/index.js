@@ -24,6 +24,7 @@ import ViewPost from "./pages/posts/view";
 import EditPost from "./pages/posts/edit";
 
 import Profile from "./pages/profile";
+import NoMatch from "./pages/errors/NoMatch";
 
 const store = initStore();
 
@@ -38,13 +39,14 @@ function App() {
 
           <Switch>
             <PrivateRoute exact path='/'><Home /></PrivateRoute>
-            <PrivateRoute exact path="/settings"><Settings /></PrivateRoute>
+            <PrivateRoute path="/settings"><Settings /></PrivateRoute>
             <PrivateRoute path="/profile/:username"><Profile /></PrivateRoute>
-            <PrivateRoute exact path="/posts/create"><CreatePost /></PrivateRoute>
-            <PrivateRoute exact path="/posts/:hexID"><ViewPost /></PrivateRoute>
+            <PrivateRoute path="/posts/create"><CreatePost /></PrivateRoute>
             <PrivateRoute path="/posts/:hexID/edit"><EditPost /></PrivateRoute>
-            <GuestRoute path='/login'><Login /></GuestRoute>
-            <GuestRoute path='/register'><Register /></GuestRoute>
+            <PrivateRoute path="/posts/:hexID"><ViewPost /></PrivateRoute>
+            <GuestRoute exact path='/login'><Login /></GuestRoute>
+            <GuestRoute exact path='/register'><Register /></GuestRoute>
+            <Route component={NoMatch} />
           </Switch>
         </AuthProvider>
       </Router>
