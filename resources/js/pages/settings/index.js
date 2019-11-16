@@ -93,8 +93,8 @@ function Settings() {
   const [errors, setErrors] = useState([]);
   const [username, setUsername] = useState(user?.username || '');
   const [email, setEmail] = useState(user?.email || '');
-  const [currentPicture, setCurrentPicture] = useState(user?.profile_picture || '');
-  const [profilePicture, setProfilePicture] = useState('/images/user_placeholder.png');
+  const [currentPicture, setCurrentPicture] = useState(user?.profile_picture || false);
+  const [profilePicture, setProfilePicture] = useState(null);
   const profilePicBlob = useRef(null);
   const profilePicUploadRef = useRef(null);
 
@@ -113,6 +113,7 @@ function Settings() {
     e.preventDefault();
 
     let formData = new FormData();
+
     formData.append('_method', 'PATCH');
     formData.append('username', username);
     formData.append('email', email);
@@ -154,7 +155,13 @@ function Settings() {
         <StyledForm onSubmit={ handleSubmit }>
           <Wrapper>
             <Control>
-              <AvatarPreview onClick={ openUploadDialog } src={ profilePicture || '/storage' + currentPicture } />
+              <AvatarPreview
+                onClick={ openUploadDialog }
+                src={
+                  profilePicture ||
+                  ((currentPicture) ? `/storage${currentPicture}` : '/images/user_placeholder.png')
+                }
+              />
               <UploadWrapper>
                 <UsernameHeader>{ user?.username || '' }</UsernameHeader>
                 <UploadLink onClick={ openUploadDialog }>Change Profile Picture</UploadLink>
