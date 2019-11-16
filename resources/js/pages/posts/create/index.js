@@ -168,7 +168,7 @@ function CreatePost() {
                 label='Description'
                 multiline
                 variant='outlined'
-                rowsMax='8'
+                inputProps={{maxLength: 200}}
                 margin='normal'
                 value={description}
                 onChange={e => setDescription(e.target.value)}
