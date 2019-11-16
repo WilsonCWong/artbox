@@ -12,7 +12,8 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.5",
         "laravel/telescope": "^2.1",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "symfony/console": "4.3.7"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
