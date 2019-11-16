@@ -40,7 +40,7 @@ class ProfileController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'max:255', 'alpha_dash', Rule::unique('users')->ignore($user)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user)],
-            'profile_picture' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'profile_picture' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ]);
 
         if ($validator->fails()) {

@@ -10,6 +10,8 @@ class CommentController extends Controller
 {
     public function __construct() {
         $this->middleware('auth');
+        $this->middleware('can:update,comment')
+            ->except('store');
     }
 
     public function store(Post $post) {

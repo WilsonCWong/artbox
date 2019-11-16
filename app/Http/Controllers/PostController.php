@@ -16,6 +16,8 @@ class PostController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('can:update,post')
+            ->only(['update', 'destroy']);
     }
 
     /**
@@ -30,8 +32,8 @@ class PostController extends Controller
 
         $validator = Validator::make(request()->all(), [
             'title' => ['required', 'string', 'min:1', 'max:70'],
-            'post_image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:4096'],
-            'description' => ['string', 'nullable', 'max:500'],
+            'post_image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
+            'description' => ['string', 'nullable', 'max:200'],
         ]);
 
         if ($validator->fails()) {
@@ -88,7 +90,7 @@ class PostController extends Controller
         $validator = Validator::make(request()->all(), [
             'title' => ['required', 'string', 'min:1', 'max:70'],
             'post_image' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:4096'],
-            'description' => ['string', 'nullable', 'max:500'],
+            'description' => ['string', 'nullable', 'max:200'],
         ]);
 
         if ($validator->fails()) {
