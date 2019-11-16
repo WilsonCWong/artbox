@@ -18,8 +18,8 @@ function AuthProvider({children}) {
     axios.get('/web_api/checkAuth')
       .then(res => {
         dispatch(updateUser(res.data.user));
-        dispatch(authenticating(false));
         dispatch(authenticateUser(true));
+        dispatch(authenticating(false));
         history.push(location.pathname);
       })
       .catch(err => {
