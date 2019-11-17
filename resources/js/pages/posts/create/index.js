@@ -1,15 +1,17 @@
 import React, {useState, useRef } from "react";
 import styled from "styled-components";
+import { useHistory } from 'react-router-dom';
 import { Button, Paper, TextField } from '@material-ui/core';
-import { Alert } from "react-bootstrap";
+import AlertsDisplay from "@/components/Error/AlertsDisplay";
 import axios from 'axios';
-import { valuesIn } from "lodash-es";
+import { useFlash } from "@/hooks/useFlash";
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  min-height: 85vh;
-  margin: 40px;
+  min-height: calc(100vh - 64px);
+  margin-left: 40px;
+  margin-right: 40px;
   justify-content: center;
   align-items: center;
 `;
@@ -77,12 +79,15 @@ const UploadInput = styled.input`
 `;
 
 function CreatePost() {
-  const [errors, setErrors] = useState([]);
+  const history = useHistory();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [previewImage, setPreview] = useState(null);
   const previewBlob = useRef(null);
   const previewUploadRef = useRef(null);
+
+  const { messages, setMessages, dispatchMessages, removeMessage } = useFlash();
 
   const openUploadDialog = e => {
     previewUploadRef.current.click();
@@ -115,28 +120,15 @@ function CreatePost() {
       previewBlob.current = null;
       setTitle('');
       setDescription('');
-      //dispatch(updateUser(res.data.user));
+      dispatchMessages({m: 'Post was successfully created.'}, 'success');
+      history.push(`/posts/${res.data.post_id.toString(16)}`);
     })
       .catch(err => {
         (err.response.status === 500) ?
-          setErrors(valuesIn({server: 'A server error has occurred.'}))
-          : setErrors(valuesIn(err.response.data.errors));
+          setMessages({server: 'A server error has occurred.'})
+          : setMessages(err.response.data.errors);
       });
   };
-
-  const renderErrors = errs => {
-    return (
-      <>
-        {errs.map(e => {
-          return (
-            <Alert key={e} variant='danger' onClose={() => setErrors(errors.filter(v => v !== e))} dismissible>
-              { e }
-            </Alert>
-          );
-        })}
-      </>
-    );
-  }
 
   return (
     <Container>
@@ -177,7 +169,7 @@ function CreatePost() {
             <Control>
               <Button fullWidth type='submit' variant="contained" color="primary">Create Post</Button>
             </Control>
-            { (errors.length) ? renderErrors(errors) : null }
+            <AlertsDisplay messages={messages} onClose={removeMessage} />
           </Wrapper>
         </StyledForm>
       </ResponsivePaper>

@@ -2,10 +2,10 @@ import React, {useState, useRef } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Paper, Avatar } from '@material-ui/core';
-import { Alert } from "react-bootstrap";
+import AlertsDisplay from "@/components/Error/AlertsDisplay";
 import axios from 'axios';
-import { valuesIn } from "lodash-es";
 import { updateUser } from "../../actions/user";
+import { useFlash } from "@/hooks/useFlash";
 
 const Container = styled.div`
   display: flex;
@@ -91,13 +91,14 @@ function Settings() {
   const user = useSelector(state => state.user.user);
   const dispatch = useDispatch();
 
-  const [errors, setErrors] = useState([]);
   const [username, setUsername] = useState(user?.username || '');
   const [email, setEmail] = useState(user?.email || '');
   const [currentPicture, setCurrentPicture] = useState(user?.profile_picture || false);
   const [profilePicture, setProfilePicture] = useState(null);
   const profilePicBlob = useRef(null);
   const profilePicUploadRef = useRef(null);
+
+  const { messages, messageType, setMessages, removeMessage } = useFlash();
 
   const openUploadDialog = e => {
     profilePicUploadRef.current.click();
@@ -128,27 +129,14 @@ function Settings() {
       }
     }).then(res => {
       dispatch(updateUser(res.data.user));
+      setMessages({m:'Your account has been updated.'}, 'success');
     })
     .catch(err => {
       (err.response.status === 500) ?
-        setErrors(valuesIn({server: 'A server error has occurred.'}))
-        : setErrors(valuesIn(err.response.data.errors));
+        setMessages({server: 'A server error has occurred.'})
+        : setMessages(err.response.data.errors);
     });
   };
-
-  const renderErrors = errs => {
-    return (
-      <>
-        {errs.map(e => {
-          return (
-            <Alert key={e} variant='danger' onClose={() => setErrors(errors.filter(v => v !== e))} dismissible>
-              { e }
-            </Alert>
-          );
-        })}
-      </>
-    );
-  }
 
   return (
     <Container>
@@ -166,7 +154,14 @@ function Settings() {
               <UploadWrapper>
                 <UsernameHeader>{ user?.username || '' }</UsernameHeader>
                 <UploadLink onClick={ openUploadDialog }>Change Profile Picture</UploadLink>
-                <UploadInput ref={profilePicUploadRef} id="profile_picture" type="file" name="profile_picture" onChange={ handleFileChange } />
+                <UploadInput
+                  ref={profilePicUploadRef}
+                  id="profile_picture"
+                  type="file"
+                  name="profile_picture"
+                  onChange={ handleFileChange }
+                  accept=".jpeg,.png,.jpg,.gif,.webp"
+                />
               </UploadWrapper>
             </Control>
             <Control>
@@ -180,7 +175,7 @@ function Settings() {
             <Control>
               <Button fullWidth type='submit' variant="contained" color="primary">Update</Button>
             </Control>
-            { (errors.length) ? renderErrors(errors) : null }
+            <AlertsDisplay messages={messages} variant={messageType} onClose={removeMessage} />
           </Wrapper>
         </StyledForm>
       </ResponsivePaper>

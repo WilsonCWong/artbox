@@ -6,9 +6,9 @@ import {
   Button,
   Container,
 } from '@material-ui/core';
-import { Alert } from 'react-bootstrap';
-import { valuesIn } from "lodash-es";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
+import { useFlash } from '@/hooks/useFlash';
+import AlertsDisplay from "@/components/Error/AlertsDisplay";
 
 const LabelContainer = styled.div`
   display: flex;
@@ -69,11 +69,12 @@ const Input = styled.input`
 
 function Login() {
   const [canRender, setCanRender] = useState(false);
-  const [errors, setErrors] = useState([]);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const { messages, dispatchMessages, setMessages, removeMessage } = useFlash();
 
   const authenticated = useSelector(state => state.auth.authenticated);
   let history = useHistory();
@@ -92,28 +93,15 @@ function Login() {
       headers: { "Content-Type": "application/json" }
     })
       .then(res => {
+        dispatchMessages({m: 'Your account has been created.'}, 'success');
         history.push('/login');
       })
       .catch(err => {
         (err.response.status === 500) ?
-          setErrors(valuesIn({server: 'A server error has occurred.'}))
-          : setErrors(valuesIn(err.response.data.errors));
+          setMessages({ server: 'A server error has occurred.'})
+          : setMessages(err.response.data.errors);
       });
   };
-
-  const renderErrors = errs => {
-      return (
-        <>
-            {errs.map(e => {
-              return (
-                <Alert key={e} variant='danger' onClose={() => setErrors(errors.filter(v => v !== e))} dismissible>
-                  { e }
-                </Alert>
-              );
-            })}
-        </>
-      );
-  }
 
   if (!canRender) return null;
 
@@ -143,7 +131,7 @@ function Login() {
           <Control>
             <Button fullWidth type='submit' variant="contained" color="primary">Register</Button>
           </Control>
-          { (errors.length) ? renderErrors(errors) : null }
+          <AlertsDisplay messages={messages} onClose={removeMessage} />
         </Wrapper>
       </StyledForm>
     </FullHeightContainer>

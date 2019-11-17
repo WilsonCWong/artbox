@@ -4,6 +4,8 @@ import axios from 'axios';
 import styled, { css } from 'styled-components';
 import { Avatar, Tabs, Tab, Paper } from "@material-ui/core";
 import Masonry from 'react-masonry-component';
+import AlertsSnack from "@/components/Error/AlertsSnack";
+import {useFlash} from "@/hooks/useFlash";
 
 const masonryStyle = css`
   max-width: 100vw;
@@ -143,7 +145,8 @@ function Profile() {
   let { username } = useParams();
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState(0);
-  const [error, setError] = useState(null);
+
+  const { messages, messageType, setMessages } = useFlash();
 
   useEffect(() => {
     axios.get(`/web_api/profile/${ username }`, {
@@ -153,7 +156,9 @@ function Profile() {
         setUser(res.data.user);
       })
       .catch(err => {
-        console.log(err);
+        (err.response.status === 500) ?
+          setMessages({server: 'A server error has occurred.'})
+          : setMessages(err.response.data.errors);
       });
   }, [username])
 
@@ -201,6 +206,7 @@ function Profile() {
 
   return (
     <Container>
+      <AlertsSnack messages={messages} variant={messageType} />
       <Header>
         <UserInfo>
           <UserAvatar src={ (user?.profile_picture) ? `/storage${user?.profile_picture}` : '/images/user_placeholder.png' } />

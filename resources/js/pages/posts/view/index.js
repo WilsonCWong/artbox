@@ -6,6 +6,8 @@ import { Alert } from "react-bootstrap";
 import axios from 'axios';
 import { relativeFromDate } from "@/utils/time-helpers";
 import ClickableAvatar from "@/components/ClickableAvatar";
+import {useFlash} from "@/hooks/useFlash";
+import AlertsSnack from "@/components/Error/AlertsSnack";
 
 const Container = styled.div`
   display: flex;
@@ -214,6 +216,8 @@ function ViewPost() {
   const [comment, setComment] = useState('');
   const [mount, setMount] = useState(0);
 
+  const { messages, messageType, setMessages } = useFlash();
+
   const commentsContainer = useRef();
   const commentsSubmitButton = useRef();
 
@@ -226,7 +230,9 @@ function ViewPost() {
         let c = commentsContainer.current;
         c.scrollTop = c.scrollHeight;
     }).catch(err => {
-      console.log(err.response);
+      (err.response.status === 500) ?
+        setMessages({server: 'A server error has occurred.'})
+        : setMessages(err.response.data.errors);
     });
   }, [hexID, mount]);
 
@@ -300,23 +306,10 @@ function ViewPost() {
     </>);
   };
 
-  const renderErrors = errs => {
-    return (
-      <>
-        {errs.map(e => {
-          return (
-            <Alert key={e} variant='danger' onClose={() => setErrors(errors.filter(v => v !== e))} dismissible>
-              { e }
-            </Alert>
-          );
-        })}
-      </>
-    );
-  }
-
   if (loadingPost) {
     return (
       <Container>
+        <AlertsSnack messages={messages} />
         <CircularProgress />
       </Container>
     );
@@ -324,6 +317,7 @@ function ViewPost() {
 
   return (
     <Container>
+      <AlertsSnack messages={messages} variant={messageType} />
       <ResponsivePaper>
           <LeftPanel width={width}>
             <ImageContainer>

@@ -8,10 +8,10 @@ import {
   Container,
   Checkbox,
 } from '@material-ui/core';
-import {Alert} from "react-bootstrap";
-import {valuesIn} from "lodash-es";
-import { authenticateUser } from "../../actions/auth";
-import { updateUser } from "../../actions/user";
+import AlertsDisplay from "@/components/Error/AlertsDisplay";
+import { authenticateUser } from "@/actions/auth";
+import { updateUser } from "@/actions/user";
+import { useFlash } from "@/hooks/useFlash";
 
 const LogoContainer = styled.div`
   display: flex;
@@ -81,10 +81,11 @@ const Input = styled.input`
 
 function Login() {
   const [canRender, setCanRender] = useState(false);
-  const [errors, setErrors] = useState([]);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
+
+  const { messages, messageType, setMessages, removeMessage } = useFlash();
 
   const authenticated = useSelector(state => state.auth.authenticated);
   const dispatch = useDispatch();
@@ -110,24 +111,10 @@ function Login() {
       })
       .catch(err => {
         (err.response.status === 500) ?
-          setErrors(valuesIn({server: 'A server error has occurred.'}))
-          : setErrors(valuesIn(err.response.data.errors));
+          setMessages({server: 'A server error has occurred.'})
+          : setMessages(err.response.data.errors);
       });
   };
-
-  const renderErrors = errs => {
-    return (
-      <>
-        {errs.map(e => {
-          return (
-            <Alert key={e} variant='danger' onClose={() => setErrors(errors.filter(v => v !== e))} dismissible>
-              { e }
-            </Alert>
-          );
-        })}
-      </>
-    );
-  }
 
   if (!canRender) return null;
 
@@ -157,7 +144,7 @@ function Login() {
           <p>
             Don't have an account? <Link to='/register'>Register here.</Link>
           </p>
-          { (errors.length) ? renderErrors(errors) : null }
+          <AlertsDisplay messages={messages} variant={messageType} onClose={removeMessage} />
         </Wrapper>
       </StyledForm>
     </FullHeightContainer>

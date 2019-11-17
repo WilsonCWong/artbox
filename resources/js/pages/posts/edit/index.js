@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import { Button, Paper, TextField } from '@material-ui/core';
-import { Alert } from "react-bootstrap";
 import axios from 'axios';
-import { valuesIn } from "lodash-es";
+import {useFlash} from "@/hooks/useFlash";
+import AlertsDisplay from "@/components/Error/AlertsDisplay";
 
 const Container = styled.div`
   display: flex;
@@ -84,13 +84,14 @@ function EditPost() {
   const username = useSelector(state => state.user.user.username);
 
   const [loaded, setLoaded] = useState(false);
-  const [errors, setErrors] = useState([]);
   const [post, setPost] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [previewImage, setPreview] = useState(null);
   const previewBlob = useRef(null);
   const previewUploadRef = useRef(null);
+
+  const { messages, setMessages, dispatchMessages, removeMessage } = useFlash();
 
   useEffect(() => {
     axios.get(`/web_api/posts/${parseInt(hexID, 16)}`, {
@@ -103,10 +104,9 @@ function EditPost() {
       setPreview(`/storage${p.media[0].content_url}`);
       setLoaded(true);
     }).catch(err => {
-      console.log(err);
       (err.response.status === 500) ?
-        setErrors(['A server error has occurred.'])
-        : setErrors(valuesIn(err.response.data.errors));
+        setMessages({server: 'A server error has occurred.'})
+        : setMessages(err.response.data.errors);
     });
   }, []);
 
@@ -142,40 +142,28 @@ function EditPost() {
       setPreview(null);
       previewBlob.current = null;
       setDescription('');
+      dispatchMessages({m:'Your post has been updated.'}, 'success');
       history.push(`/posts/${hexID}`);
     })
       .catch(err => {
         (err.response.status === 500) ?
-          setErrors(valuesIn({server: 'A server error has occurred.'}))
-          : setErrors(valuesIn(err.response.data.errors));
+          setMessages({server: 'A server error has occurred.'})
+          : setMessages(err.response.data.errors);
       });
   };
 
   const handleDelete = e => {
     axios.delete(`/web_api/posts/${parseInt(hexID, 16)}`)
       .then(res => {
+        dispatchMessages({m:'Your post has been deleted.'}, 'success');
         history.push(`/profile/${username}`);
       })
       .catch(err => {
         (err.response.status === 500) ?
-          setErrors(valuesIn({server: 'A server error has occurred.'}))
-          : setErrors(valuesIn(err.response.data.errors));
+          setMessages({server: 'A server error has occurred.'})
+          : setMessages(err.response.data.errors);
       })
   };
-
-  const renderErrors = errs => {
-    return (
-      <>
-        {errs.map(e => {
-          return (
-            <Alert key={e} variant='danger' onClose={() => setErrors(errors.filter(v => v !== e))} dismissible>
-              { e }
-            </Alert>
-          );
-        })}
-      </>
-    );
-  }
 
   if (!loaded) return null;
 
@@ -221,7 +209,7 @@ function EditPost() {
             <Control>
               <Button fullWidth onClick={handleDelete} variant="contained" color="secondary">Delete Post</Button>
             </Control>
-            { (errors.length) ? renderErrors(errors) : null }
+            <AlertsDisplay messages={messages} onClose={removeMessage} />
           </Wrapper>
         </StyledForm>
       </ResponsivePaper>
