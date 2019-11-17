@@ -24,12 +24,14 @@ function ClickableAvatar(props) {
   const { username, path, width, height, ...rest} = props;
 
   return (
-    <PosterAvatar {...rest} as={Link} to={`/profile/${username}`}>
+    <PosterAvatar {...rest}  as={Link} to={`/profile/${username}`}>
       <PosterAvatar
         src={
           (path) ? `/storage/${path}`
             : '/images/user_placeholder.png'
         }
+        width={width}
+        height={height}
       />
     </PosterAvatar>
   )
