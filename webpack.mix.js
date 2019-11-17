@@ -13,6 +13,15 @@ require('laravel-mix-bundle-analyzer');
  */
 mix.setPublicPath('public/');
 
+mix.webpackConfig({
+  resolve: {
+    extensions: [".js", ".jsx"],
+    alias: {
+      "@": __dirname + "/resources/js"
+    }
+  }
+});
+
 mix.options({
   hmrOptions: {
     host: 'artbox.test',
