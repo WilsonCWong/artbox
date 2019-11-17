@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import {
   Link,
@@ -12,7 +12,8 @@ import {
   NavDropdown,
 } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Avatar, Button } from '@material-ui/core';
+import { Avatar } from '@material-ui/core';
+import ClickableAvatar from './ClickableAvatar';
 import { authenticateUser } from "../actions/auth";
 import { updateUser } from "../actions/user";
 import { showNav } from "../actions/ui";
@@ -49,6 +50,33 @@ const UserContainer = styled.div`
   padding: 0px 8px;
 `;
 
+const CollapseUserContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+`;
+
+const CollapseUsername = styled(Link)`
+  font-size: 2em;
+  font-family: 'Nunito', sans-serif;
+  color: #1c1c1c;
+  
+  &:hover {
+    text-decoration: none;
+    color: #1c1c1c;
+  }
+`;
+
+const CollapseLink = styled(Link)`
+  text-align: center;
+`;
+
+const CollapseButton = styled(Nav.Link)`
+  text-align: center;
+`;
+
 const VerticalDivider = styled.span`
   margin-left:12px;
   margin-right:12px;
@@ -59,11 +87,29 @@ const VerticalDivider = styled.span`
   }
 `;
 
+const NonCollapseContainer = styled.div`
+  display: flex;
+  
+  @media only screen and (max-width: 576px) {
+    display: none;
+  }
+`;
+
+const CollapseContainer = styled.div`
+   display: none;
+   
+  @media only screen and (max-width: 576px) {
+    display: block;
+  }
+`;
+
 function TopNavigation() {
   const user = useSelector(state => state.user.user);
   const dispatch = useDispatch();
   const location = useLocation();
   const history = useHistory();
+
+  const toggler = useRef();
 
   useEffect(() => {
     return () => {
@@ -84,6 +130,10 @@ function TopNavigation() {
     return null;
   } else {
     dispatch(showNav(true));
+  }
+
+  const handleCollapseClick = e => {
+    toggler.current.click();
   }
 
   const dropdownDisplay = () => {
@@ -109,12 +159,34 @@ function TopNavigation() {
       <div>
         <Navbar collapseOnSelect expand='sm' fixed='top' bg="light" variant="light">
           <Navbar.Brand as={Link} to='/'>ArtBox</Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Toggle ref={toggler} aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto">
-              { renderDropdown() }
-              <VerticalDivider/>
-              <Nav.Link as={Link} to="/posts/create">Create Post</Nav.Link>
+              <NonCollapseContainer>
+                { renderDropdown() }
+                <VerticalDivider/>
+                <Nav.Link as={Link} to="/posts/create">Create Post</Nav.Link>
+              </NonCollapseContainer>
+              <CollapseContainer>
+                <CollapseUserContainer>
+                  <ClickableAvatar
+                    username={user?.username}
+                    path={user?.profile_picture}
+                    width={70}
+                    height={70}
+                  />
+                  <CollapseUsername to={`/profile/${user?.username}`}>
+                    {user?.username}
+                  </CollapseUsername>
+                </CollapseUserContainer>
+                <NavDropdown.Divider />
+                <Nav.Link as={CollapseLink} onClick={handleCollapseClick} to={`/profile/${user?.username}`}>Profile</Nav.Link>
+                <Nav.Link as={CollapseLink} onClick={handleCollapseClick} to='/settings'>Settings</Nav.Link>
+                <NavDropdown.Divider />
+                <Nav.Link as={CollapseLink} onClick={handleCollapseClick} to="/posts/create">Create Post</Nav.Link>
+                <NavDropdown.Divider />
+                <CollapseButton onClick={Logout}>Logout</CollapseButton>
+              </CollapseContainer>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
