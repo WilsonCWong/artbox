@@ -32,7 +32,7 @@ const ResponsivePaper = styled(Paper)`
 
 const LeftPanel = styled.div`
   display: block;
-  width: ${props => props.width + 'px' || '60%'};
+  width: ${props => (props.width) ? props.width + 'px' : '60%'};
   height: 600px;
   user-select: none;
 `;
@@ -46,7 +46,7 @@ const ImageContainer = styled.div`
 `;
 
 const Image = styled.img`
-  height: auto; 
+  height: ${props => (props.height) ? props.height + 'px' : 'auto'};
   width: auto; 
   max-width: 100%;
   max-height: 100%;
@@ -213,6 +213,7 @@ function ViewPost() {
   const [post, setPost] = useState(null);
   const [loadingDimensions, setLoadingDimensions] = useState(true);
   const [width, setWidth] = useState(-1);
+  const [height, setHeight] = useState(null);
   const [comment, setComment] = useState('');
   const [mount, setMount] = useState(0);
 
@@ -241,6 +242,18 @@ function ViewPost() {
 
     // Calculate ratio the width needs to be increased by to return to source aspect
     let aspect = img.width / img.height;
+    if (aspect <= 1) {
+      if (img.width < 400) {
+        let ratio = 400 / img.width;
+        setWidth(400);
+        setHeight(img.height * ratio);
+      }
+      else {
+        setWidth(img.width);
+      }
+      return;
+    }
+
     let containerAspect = img.width / 600;
     let ratio =  aspect / containerAspect;
     // Apply the ratio
@@ -321,7 +334,7 @@ function ViewPost() {
       <ResponsivePaper>
           <LeftPanel width={width}>
             <ImageContainer>
-                <Image onLoad={loadImageHandler} src={`/storage${post.media[0].content_url}`} />
+                <Image height={height} onLoad={loadImageHandler} src={`/storage${post.media[0].content_url}`} />
             </ImageContainer>
           </LeftPanel>
         <RightPanel>
