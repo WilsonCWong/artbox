@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const config = require('./webpack.config');
 require('laravel-mix-bundle-analyzer');
 
 /*
@@ -13,14 +14,7 @@ require('laravel-mix-bundle-analyzer');
  */
 mix.setPublicPath('public/');
 
-mix.webpackConfig({
-  resolve: {
-    extensions: [".js", ".jsx"],
-    alias: {
-      "@": __dirname + "/resources/js"
-    }
-  }
-});
+mix.webpackConfig(config);
 
 mix.options({
   hmrOptions: {
