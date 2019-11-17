@@ -61,8 +61,7 @@ class PostController extends Controller
             'content_type' => 'image'
         ]);
 
-        return response('', 200);
-
+        return response()->json(['post_id' => $post->id], 200);
     }
 
     /**
@@ -89,7 +88,7 @@ class PostController extends Controller
     {
         $validator = Validator::make(request()->all(), [
             'title' => ['required', 'string', 'min:1', 'max:70'],
-            'post_image' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:4096'],
+            'post_image' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:4096'],
             'description' => ['string', 'nullable', 'max:200'],
         ]);
 
