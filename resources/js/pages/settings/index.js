@@ -10,8 +10,9 @@ import { updateUser } from "../../actions/user";
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  min-height: 85vh;
-  margin: 40px;
+  min-height: calc(100vh - 64px);
+  margin-left: 20px;
+  margin-right: 20px;
   justify-content: center;
   align-items: center;
 `;

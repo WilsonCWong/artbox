@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
-import { Avatar, Grid, Paper } from '@material-ui/core';
+import { Avatar, Grid } from '@material-ui/core';
 import { Carousel } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import Masonry from 'react-masonry-component';
@@ -107,8 +107,6 @@ const PosterName = styled.a`
   }
 `;
 
-
-
 function Home() {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [posts, setPosts] = useState(null);
@@ -169,9 +167,9 @@ function Home() {
     <Container container>
       <Grid item xs={12}>
         <Carousel css='height: 450px;'>
-          <Carousel.Item css='max-height: 450px;'>
+          <Carousel.Item css='height: 450px;'>
             <img
-              css='filter: brightness(50%);'
+              css='filter: brightness(50%); height: 450px; object-fit: cover; object-position: top;'
               className="d-block w-100"
               src="/images/slide1.jpg"
               alt="Built by Artists, for Artists."
@@ -183,6 +181,7 @@ function Home() {
           </Carousel.Item>
           <Carousel.Item css='height: 450px;'>
             <img
+              css='height: 450px; object-fit: cover; object-position: top;'
               className="d-block w-100"
               src="/images/slide2.jpg"
               alt="Recruit Top Tier Talent"
@@ -198,6 +197,7 @@ function Home() {
           </Carousel.Item>
           <Carousel.Item css='height: 450px;'>
             <img
+              css='height: 450px; object-fit: cover; object-position: top;'
               className="d-block w-100"
               src="/images/slide3.jpg"
               alt="Industry-Standard Training"

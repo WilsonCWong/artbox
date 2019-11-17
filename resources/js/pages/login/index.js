@@ -23,7 +23,7 @@ const LogoContainer = styled.div`
 const Logo = styled.img`
   max-height: 50px;
   margin-right: 10px;
-`
+`;
 
 const SiteLabel = styled.h1`
   font-family: 'ZCOOL XiaoWei', serif;
@@ -37,7 +37,7 @@ const FullHeightContainer = styled(Container)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 95vh;
 `;
 
 const StyledForm = styled.form`

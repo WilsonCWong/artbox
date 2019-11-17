@@ -29,7 +29,7 @@ const FullHeightContainer = styled(Container)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 95vh;
 `;
 
 const StyledForm = styled.form`
