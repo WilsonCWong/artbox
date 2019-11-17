@@ -1,6 +1,5 @@
 import React, {useState, useRef } from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
 import { Button, Paper, TextField } from '@material-ui/core';
 import { Alert } from "react-bootstrap";
 import axios from 'axios';

@@ -1,12 +1,11 @@
 import React, {useState, useEffect, useRef} from "react";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
 import { CircularProgress, Paper, Avatar } from '@material-ui/core';
 import { Link, useParams } from 'react-router-dom';
 import { Alert } from "react-bootstrap";
 import axios from 'axios';
-import { relativeFromDate } from "../../../utils/time-helpers";
-import ClickableAvatar from "../../../components/ClickableAvatar";
+import { relativeFromDate } from "@/utils/time-helpers";
+import ClickableAvatar from "@/components/ClickableAvatar";
 
 const Container = styled.div`
   display: flex;
