@@ -1,13 +1,19 @@
 import React, {useState, useEffect, useRef} from "react";
 import styled from "styled-components";
-import { CircularProgress, Paper, Avatar } from '@material-ui/core';
-import { Link, useParams } from 'react-router-dom';
-import { Alert } from "react-bootstrap";
+import { CircularProgress, Paper, Avatar, Button } from '@material-ui/core';
+import { useSelector } from "react-redux";
+import { Link, useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { relativeFromDate } from "@/utils/time-helpers";
 import ClickableAvatar from "@/components/ClickableAvatar";
-import {useFlash} from "@/hooks/useFlash";
+import { useFlash } from "@/hooks/useFlash";
 import AlertsSnack from "@/components/Error/AlertsSnack";
+import { useAuthorization } from "@/hooks/useAuthorization";
+import { IconButton } from '@material-ui/core';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from '@material-ui/icons';
 
 const Container = styled.div`
   display: flex;
@@ -168,6 +174,22 @@ const CommentInput = styled.textarea`
 
 `;
 
+const EditCommentInput = styled.textarea`
+  width: 100%;
+  resize: none;
+  padding: 5px;
+  outline: none;
+`;
+
+const EditCommentButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const StyledIconButton = styled(IconButton)`
+  display: inline;
+`;
+
 const Center = styled.div`
   display: flex; 
   flex-direction: column;
@@ -204,11 +226,22 @@ const CommentSubmit = styled.button`
   }
 `;
 
+const HorizontalLine = styled.div`
+  border-bottom: 1px solid #999;
+  height: 0;
+  margin-left: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+  flex-grow: 1;
+  display: inline-block;
+`;
+
 
 function ViewPost() {
   const { hexID } = useParams();
+  const history = useHistory();
+  const user = useSelector(state => state.user.user);
 
-  const [errors, setErrors] = useState([]);
   const [loadingPost, setLoadingPost] = useState(true);
   const [post, setPost] = useState(null);
   const [loadingDimensions, setLoadingDimensions] = useState(true);
@@ -216,8 +249,11 @@ function ViewPost() {
   const [height, setHeight] = useState(null);
   const [comment, setComment] = useState('');
   const [mount, setMount] = useState(0);
+  const [editCommentID, setEditCommentID] = useState(null);
+  const [editCommentText, setEditCommentText] = useState('');
 
   const { messages, messageType, setMessages } = useFlash();
+  const [isAuthorized, authorized] = useAuthorization('posts', parseInt(hexID, 16));
 
   const commentsContainer = useRef();
   const commentsSubmitButton = useRef();
@@ -231,6 +267,7 @@ function ViewPost() {
         let c = commentsContainer.current;
         c.scrollTop = c.scrollHeight;
     }).catch(err => {
+      setLoadingPost(false);
       (err.response.status === 500) ?
         setMessages({server: 'A server error has occurred.'})
         : setMessages(err.response.data.errors);
@@ -274,9 +311,41 @@ function ViewPost() {
       setComment('');
       setMount(mount + 1);
     }).catch(err => {
-      console.log(err);
+      (err.response.status === 500) ?
+        setMessages({server: 'A server error has occurred.'})
+        : setMessages(err.response.data.errors);
     })
   };
+
+  const deleteComment = id => {
+    axios.post(`/web_api/comments/${id}`, { '_method': 'DELETE'}, {
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+    }).then(res => {
+      setMount(mount + 1);
+      setMessages({m: 'Comment deleted.'}, 'success');
+    }).catch(err => {
+      (err.response.status === 500) ?
+        setMessages({server: 'A server error has occurred.'})
+        : setMessages(err.response.data.errors);
+    });
+  };
+
+  const updateComment = (e, id) => {
+    e.preventDefault();
+
+    axios.post(`/web_api/comments/${id}`, { '_method': 'PATCH', comment: editCommentText}, {
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+    }).then(res => {
+      setMount(mount + 1);
+      setEditCommentID(null);
+      setEditCommentText('');
+      setMessages({m: 'Comment updated.'}, 'success');
+    }).catch(err => {
+      (err.response.status === 500) ?
+        setMessages({server: 'A server error has occurred.'})
+        : setMessages(err.response.data.errors);
+    });
+  }
 
   const handleTextArea = e => {
     if (e.target.value === '') {
@@ -296,22 +365,67 @@ function ViewPost() {
       );
     }
 
+    const handleEdit = (id, comment) => {
+      setEditCommentID(id);
+      setEditCommentText(comment);
+    };
+
+    const renderCommentToolbar = (id, comment) => {
+      return (
+        <>
+          <StyledIconButton onClick={e => handleEdit(id, comment)} size='small'>
+            <EditIcon fontSize='small' />
+          </StyledIconButton>
+          <StyledIconButton onClick={e => deleteComment(id)} size='small'>
+            <DeleteIcon fontSize='small' />
+          </StyledIconButton>
+        </>
+      )
+    };
+
     return (<>
-      { post.comments.map(c => {
+      { post?.comments?.map(c => {
         return (
-          <div key={c.id}>
+          <div key={c?.id}>
             <CommenterInfo>
               <ClickableAvatar
-                username={c.commenter.username}
-                path={c.commenter.profile_picture}
+                username={c?.commenter.username}
+                path={c?.commenter.profile_picture}
               />
-              <div css='margin-left: 10px;'>
-                <PosterName css='margin-left: 0;' as={Link} to={`/profile/${c.commenter.username}`}>
-                  {c.commenter.username}
-                </PosterName>
-                <Comment>{c.comment}</Comment>
-                <LightText>{relativeFromDate(c.created_at)}</LightText>
-              </div>
+              { (editCommentID === c?.id) ?
+                <form onSubmit={(e) => updateComment(e, c?.id)} css='width: 100%; margin-left: 10px;'>
+                  <EditCommentInput
+                    required
+                    value={editCommentText}
+                    onChange={e => setEditCommentText(e.target.value)}
+                  />
+                  <EditCommentButtonContainer>
+                    <Button onClick={e => setEditCommentID(null)}>Cancel</Button>
+                    <Button type='submit'>Save</Button>
+                  </EditCommentButtonContainer>
+                </form>
+                :
+                <div css='width: 100%; margin-left: 10px;'>
+                  <PosterName css='margin-left: 0;' as={Link} to={`/profile/${c?.commenter.username}`}>
+                    {c?.commenter.username}
+                  </PosterName>
+                  <Comment>{c?.comment}</Comment>
+                  <div css='display: flex; align-items: center;'>
+                    <div>
+                      <LightText css='display: inline; margin-right: 10px;'>
+                        {relativeFromDate(c?.created_at)}
+                      </LightText>
+                      {(user?.id === c?.commenter.id) && renderCommentToolbar(c?.id, c?.comment)}
+                    </div>
+                    {(c?.created_at !== c?.updated_at) && (<>
+                      <HorizontalLine/>
+                      <LightText css='display: inline; margin-left: auto; margin-right: 10px;'>
+                        Edited: {relativeFromDate(c?.updated_at)}
+                      </LightText>
+                    </>)}
+                  </div>
+                </div>
+              }
             </CommenterInfo>
           </div>
         );
@@ -322,7 +436,6 @@ function ViewPost() {
   if (loadingPost) {
     return (
       <Container>
-        <AlertsSnack messages={messages} />
         <CircularProgress />
       </Container>
     );
@@ -350,6 +463,11 @@ function ViewPost() {
             <PosterName as={Link} to={`/profile/${post.poster.username}`}>
               {post.poster.username}
             </PosterName>
+            { authorized &&
+              <IconButton onClick={e => history.push(`/posts/${hexID}/edit`)} className='ml-auto'>
+                <EditIcon />
+              </IconButton>
+            }
           </UserInfo>
           <DescriptionBox>
             <PostTitle>{post.title}</PostTitle>

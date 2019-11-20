@@ -6,6 +6,7 @@ import { Button, Paper, TextField } from '@material-ui/core';
 import axios from 'axios';
 import {useFlash} from "@/hooks/useFlash";
 import AlertsDisplay from "@/components/Error/AlertsDisplay";
+import {useAuthorization} from "@/hooks/useAuthorization";
 
 const Container = styled.div`
   display: flex;
@@ -93,6 +94,15 @@ function EditPost() {
 
   const { messages, setMessages, dispatchMessages, removeMessage } = useFlash();
 
+  const authorizationCb = auth => {
+    if (!auth) {
+      history.replace('/unauthorized');
+    }
+  };
+
+  const [isAuthorizing] = useAuthorization('posts', parseInt(hexID, 16), authorizationCb);
+
+
   useEffect(() => {
     axios.get(`/web_api/posts/${parseInt(hexID, 16)}`, {
       headers: { 'Accept': 'application/json' }
@@ -100,7 +110,7 @@ function EditPost() {
       let p = res.data.post;
       setPost(p);
       setTitle(p.title);
-      setDescription(p.description);
+      setDescription(p.description || '');
       setPreview(`/storage${p.media[0].content_url}`);
       setLoaded(true);
     }).catch(err => {
@@ -165,7 +175,7 @@ function EditPost() {
       })
   };
 
-  if (!loaded) return null;
+  if (!loaded || isAuthorizing) return null;
 
   return (
     <Container>

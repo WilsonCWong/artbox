@@ -18,6 +18,9 @@ Route::group(['prefix' => 'web_api'], function() {
     // For testing purposes
     Route::get('csrf', 'TestController@csrf');
 
+    Route::get('authorize/posts/{post}', 'AuthorizationController@canUpdatePost');
+    Route::get('authorize/comments/{comment}', 'AuthorizationController@canUpdateComment');
+
     Route::get('feed/home/{quantity}', 'FeedController@home');
     Route::get('feed/users/{quantity}', 'FeedController@users');
 

@@ -25,6 +25,7 @@ import EditPost from "./pages/posts/edit";
 
 import Profile from "./pages/profile";
 import NoMatch from "./pages/errors/NoMatch";
+import Unauthorized from "./pages/errors/Unauthorized";
 
 const store = initStore();
 
@@ -44,6 +45,7 @@ function App() {
             <PrivateRoute path="/posts/create"><CreatePost /></PrivateRoute>
             <PrivateRoute path="/posts/:hexID/edit"><EditPost /></PrivateRoute>
             <PrivateRoute path="/posts/:hexID"><ViewPost /></PrivateRoute>
+            <PrivateRoute path="/unauthorized"><Unauthorized /></PrivateRoute>
             <GuestRoute exact path='/login'><Login /></GuestRoute>
             <GuestRoute exact path='/register'><Register /></GuestRoute>
             <Route component={NoMatch} />
