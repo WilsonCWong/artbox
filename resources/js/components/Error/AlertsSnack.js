@@ -95,7 +95,7 @@ const AlertsSnack = React.forwardRef(
               <ErrorWrapper>
                 {messages.map(err => {
                   return (
-                    <ErrorMessage>{ err }</ErrorMessage>
+                    <ErrorMessage key={err}>{ err }</ErrorMessage>
                   );
                 })}
               </ErrorWrapper>
