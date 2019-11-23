@@ -62,6 +62,7 @@ const Image = styled.img`
 const RightPanel = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 400px;
   width: 400px;
   height: 600px;
   border-left: 1px solid #efefef;
