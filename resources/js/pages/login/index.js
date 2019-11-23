@@ -21,14 +21,7 @@ const LogoContainer = styled.div`
 `
 
 const Logo = styled.img`
-  max-height: 50px;
-  margin-right: 10px;
-`;
-
-const SiteLabel = styled.h1`
-  font-family: 'ZCOOL XiaoWei', serif;
-  font-size: 3em;
-  width: 200px;
+  max-height: 150px;
   margin-right: 10px;
 `;
 
@@ -121,8 +114,7 @@ function Login() {
   return (
     <FullHeightContainer maxWidth='lg'>
       <LogoContainer>
-        <Logo src="/images/logo.svg" />
-        <SiteLabel>ArtBox</SiteLabel>
+        <Logo src="/images/logo.png" />
       </LogoContainer>
       <StyledForm onSubmit={handleSubmit}>
         <Wrapper>

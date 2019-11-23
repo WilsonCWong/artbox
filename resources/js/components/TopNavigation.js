@@ -103,6 +103,15 @@ const CollapseContainer = styled.div`
   }
 `;
 
+const Logo = styled.img`
+  height: 40px;
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
+
 function TopNavigation() {
   const user = useSelector(state => state.user.user);
   const dispatch = useDispatch();
@@ -158,7 +167,9 @@ function TopNavigation() {
   return (
       <div>
         <Navbar collapseOnSelect expand='sm' fixed='top' bg="light" variant="light">
-          <Navbar.Brand as={Link} to='/'>ArtBox</Navbar.Brand>
+          <Navbar.Brand css='padding: 0;' as={Link} to='/'>
+            <Logo src='/images/logo.png'/>
+          </Navbar.Brand>
           <Navbar.Toggle ref={toggler} aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto">
