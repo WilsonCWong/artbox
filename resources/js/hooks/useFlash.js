@@ -40,6 +40,10 @@ export function useFlash() {
     }
   };
 
+  const clearMessages = () => {
+    setMessages({});
+  };
 
-  return { messages, messageType, setMessages, dispatchMessages, removeMessage };
+
+  return { messages, messageType, setMessages, dispatchMessages, removeMessage, clearMessages };
 }

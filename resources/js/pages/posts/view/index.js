@@ -253,7 +253,7 @@ function ViewPost() {
   const [editCommentID, setEditCommentID] = useState(null);
   const [editCommentText, setEditCommentText] = useState('');
 
-  const { messages, messageType, setMessages } = useFlash();
+  const { messages, messageType, setMessages, clearMessages } = useFlash();
   const [isAuthorized, authorized] = useAuthorization('posts', parseInt(hexID, 16));
 
   const commentsContainer = useRef();
@@ -311,6 +311,7 @@ function ViewPost() {
     }).then(res => {
       setComment('');
       setMount(mount + 1);
+      setMessages({m: 'Comment posted.'}, 'success');
     }).catch(err => {
       (err.response.status === 500) ?
         setMessages({server: 'A server error has occurred.'})
@@ -444,7 +445,7 @@ function ViewPost() {
 
   return (
     <Container>
-      <AlertsSnack messages={messages} variant={messageType} />
+      <AlertsSnack open={messages.length} messages={messages} variant={messageType} onClose={clearMessages} />
       <ResponsivePaper>
           <LeftPanel width={width}>
             <ImageContainer>
