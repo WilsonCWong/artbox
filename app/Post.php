@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\User;
+use App\Mail\CommentCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -49,7 +51,13 @@ class Post extends Model
     }
 
     public function createComment($comment) {
-        $this->comments()->create($comment);
+        $newComment = $this->comments()->create($comment);
+        $poster = User::select(['id', 'email'])->where('id', $this->poster->id)->first();
+        if ($poster->id !== $newComment->commenter->id) {
+            \Mail::to($poster->email)->queue(
+                new CommentCreated($this, $newComment)
+            );
+        }
     }
 
     public function addMedia($media) {
