@@ -1,6 +1,6 @@
 # ArtBox
 
-ArtBox is a image-sharing social media website created with Laravel, React, and MariaDB.
+ArtBox is an image-sharing social media website created with Laravel, React, and MariaDB.
 
 It has the following features:
 - Dynamic interface
