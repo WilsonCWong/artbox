@@ -29,7 +29,7 @@ You should have PHP and a SQL driver installed. If you wish to use PostgreSQL, y
 6. Run `npm run hot` to start the React frontend with hot-reloading.
 7. Run `php artisan serve` to serve the Laravel backend.
 8. For email functionality, run `php artisan queue:listen`.
-9. Visit the site (`localhost:8000` by default).
+9. Visit the site (`localhost:8000` by default). Telescope is also installed, so you can see things like requests by going to `localhost:8000/telescope`.
 
 # Screenshots
 
