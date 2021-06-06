@@ -18,7 +18,7 @@ mix.webpackConfig(config);
 
 mix.options({
   hmrOptions: {
-    host: 'artbox.test',
+    host: 'localhost',
     port: 8080
   }
 });

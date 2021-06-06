@@ -14,6 +14,7 @@ const LabelContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   margin-bottom: 30px;
 `;
 
@@ -25,7 +26,7 @@ const RegisterLabel = styled.h1`
 `;
 
 const FullHeightContainer = styled(Container)`
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   justify-content: center;
   align-items: center;

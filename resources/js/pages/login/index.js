@@ -17,6 +17,7 @@ const LogoContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   margin-bottom: 30px;
 `
 
@@ -26,7 +27,7 @@ const Logo = styled.img`
 `;
 
 const FullHeightContainer = styled(Container)`
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   justify-content: center;
   align-items: center;
