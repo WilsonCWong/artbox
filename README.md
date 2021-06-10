@@ -19,7 +19,7 @@ It has the following features:
 
 You should have PHP and a SQL driver installed. If you wish to use PostgreSQL, you need to enable the PostgreSQL driver for PHP in `php.ini`.
 
-** Windows **
+**Windows**
 
 1. Copy the `.env.example` and create your own `.env`, filling in the database environment variables and the `APP_KEY`. You can generate an app key with `php artisan key:generate` in the project directory.
 2. Install dependencies by first running `yarn`, then `composer i`.
