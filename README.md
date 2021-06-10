@@ -33,14 +33,8 @@ You should have PHP and a SQL driver installed. If you wish to use PostgreSQL, y
 
 # Screenshots
 
-## Profile Page
-
-![Profile Page](https://i.imgur.com/md60y1R.png)
-
-## Home Page
-
-![Home Page](https://i.imgur.com/OCDurk9.png)
-
-## Post Page
-
-![Post Page](https://i.imgur.com/vYl4eYz.png)
+![Account Settings](https://imgur.com/iUHBza6)
+![Home Page](https://imgur.com/wtHQJqs)
+![Post](https://imgur.com/qkXxJTJ)
+![Edit Post](https://imgur.com/wXid5e3)
+![Profile](https://imgur.com/aWAAWto)
